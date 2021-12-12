@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+autonumber
+ZygoteInit -> ZygoteInit:main()
+ZygoteInit->ZygoteInit:forkSystemServer()
+ZygoteInit->ZygoteServer:runSelectLoop()
+ZygoteServer ->ZygoteConnection: processOneCommand()
+ZygoteConnection -> Zygote:forkAndSpecialize()
+ZygoteConnection -> ZygoteConnection:handleChildProc()
+ZygoteConnection --> ZygoteInit:zygoteInit()
+ZygoteInit -> RuntimeInit:applicationInit()
+RuntimeInit -> RuntimeInit:findStaticMain()
+RuntimeInit -> MethodAndArgsCaller :run()
+note right: 反射调用\nActivityThread的\nmain()方法
+MethodAndArgsCaller -> ActivityThread:main()
+ActivityThread -> ActivityThread:attach()
+ActivityManagerService -> ActivityManagerService:attachApplication()
+ActivityManagerService -> ActivityManagerService:attachApplicationLocked()
+ActivityTaskManagerService -> RootActivityContainer:attachApplication()
+RootActivityContainer -> ActivityStackSupervisor:realStartActivityLocked()
+note right:真正启动\nActivity
+ActivityStackSupervisor -> ClientTransaction:setLifecycleStateRequest()
+ClientTransaction -> ClientTransaction:addCallback()
+ActivityStackSupervisor ->ActivityTaskManagerService
+ActivityTaskManagerService->ClientLifecycleManager:scheduleTransaction()
+ClientLifecycleManager ->ClientTransaction:schedule()
+ClientTransaction --> ActivityThread:scheduleTransaction()
+ActivityThread -> ActivityThread:scheduleTransaction()
+ActivityThread ->TransactionExecutor:execute()
+TransactionExecutor -> TransactionExecutor:executeCallbacks()
+TransactionExecutor -> TransactionExecutor:cycleToPath()
+TransactionExecutor -> TransactionExecutor:performLifecycleSequence()
+TransactionExecutor --> ActivityThread:handleLaunchActivity()
+ActivityThread ->ActivityThread:performLaunchActivity()
+note right:反射创建Activity
+ActivityThread -> Instrumentation:callActivityOnCreate()
+Instrumentation -> Instrumentation:prePerformCreate(activity)
+Instrumentation -> Activity:performCreate(bundle)
+Instrumentation -> Instrumentation:postPerformCreate(activity)
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+autonumber
+SystemServer -> SystemServer:run()
+SystemServer -> SystemServer:startOtherServices()
+SystemServer -> ActivityManagerService: systemReady()
+ActivityManagerService -> ActivityTaskManagerService: startHomeOnAllDisplays()
+ActivityTaskManagerService -> RootActivityContainer: startHomeOnAllDisplays()
+RootActivityContainer --> ActivityTaskManagerService:getHomeIntent()
+RootActivityContainer -> RootActivityContainer:startHomeOnDisplay()
+ActivityTaskManagerService -> ActivityStartController :getActivityStartController()
+ActivityStartController -> ActivityStartController :startHomeActivity()
+ActivityStartController -> ActivityStartController:obtainStarter()
+ActivityStartController -> ActivityStarter:execute()
+ActivityStarter -> ActivityStarter:startActivity()
+ActivityStarter -> ActivityStarter:startActivityUnchecked()
+ActivityStarter --> RootActivityContainer:resumeFocusedStacksTopActivities()
+RootActivityContainer -> ActivityStack:resumeTopActivityUncheckedLocked()
+ActivityStack -> ActivityStack:resumeTopActivityInnerLocked()
+ActivityStack ->ActivityStackSupervisor:startSpecificActivityLocked()
+ActivityStack ->ActivityStackSupervisor:scheduleResumeTopActivities()
+note right:让Activity到栈顶
+ActivityStack ->ActivityTaskManagerService:startProgress()
+ActivityTaskManagerService -> ActivityTaskManagerService:startProcessLocked()
+ActivityTaskManagerService -> ProcessList:startProcessLocked()
+ProcessList -> ProcessList:startProcess()
+ProcessList -> Process:start()
+Process -> ZygoteProcess:start()
+ZygoteProcess -> ZygoteProcess:startViaZygote()
+ZygoteProcess -> ZygoteProcess:zygoteSendArgsAndGetResult()
+ZygoteProcess -> ZygoteProcess:attemptZygoteSendArgsAndGetResult()
+@enduml
