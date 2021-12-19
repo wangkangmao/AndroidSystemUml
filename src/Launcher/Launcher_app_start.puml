@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+autonumber
+
+'Alice -> Bob: Authentication Request
+'Bob --> Alice: Authentication Response
+
+Launcher3 -> LauncherAppState:setLauncher
+LauncherAppState -> LauncherAppState:getInstance()
+LauncherAppState -> LauncherAppState:setLauncher()
+LauncherAppState -> LauncherModel:initialize()
+Launcher3 -> LauncherModel:startLoader()
+LauncherModel -> LauncherModel:startLoaderForResults()
+LauncherModel -> LoaderTask :run()
+LoaderTask -> LoaderTask :loadWorkspace()
+LoaderTask -> LoaderResults:bindWorkspace()
+LoaderTask -> LoaderTask:loadAllApps()
+LoaderTask -> LoaderResults:bindAllApps()
+LoaderResults --> Launcher3:bindAllApplications()
+Launcher3 -> AllAppsContainerView:getAppsStore()
+note right: AllAppsContainerView\n负责展示桌面和交互
+AllAppsContainerView -> AllAppsStore:setApps()
+AllAppsStore -> AllAppsStore:notifyUpdate()
+AllAppsStore -> AlphabeticalAppsList:onAppsUpdated()
+AlphabeticalAppsList -> AlphabeticalAppsList:updateAdapterItems()
+note right: 更新icon列表
+AlphabeticalAppsList ->AlphabeticalAppsList:updateAdapterItems()
+AlphabeticalAppsList ->AlphabeticalAppsList:refreshRecyclerView()
+AlphabeticalAppsList --> AllAppsContainerView:onFinishInflate()
+note right: 更新header和search
+
+
+@enduml
