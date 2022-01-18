@@ -3,6 +3,10 @@
 
 hide footbox
 autonumber
+init.rc -> init.rc:app_process
+init.rc -> AndroidRuntime
+AndroidRuntime -> AndroidRuntime:main()
+AndroidRuntime -> ZygoteInit
 ZygoteInit -> ZygoteInit:main()
 ZygoteInit->ZygoteInit:forkSystemServer()
 ZygoteInit->ZygoteServer:runSelectLoop()
